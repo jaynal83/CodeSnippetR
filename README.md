@@ -9,3 +9,4 @@ If you found this is useful, I would request you to leave a comment or even you 
 ## List of Snippet with Examples
 
 -   [Probability density](https://rpubs.com/jaynal83/densityplot) plot showing filled area for different quantile regions. The corresponding Rmarkdown file is in this repository and the URL contains the rendered version of it.
+-   [Re-order factor labels](https://rpubs.com/jaynal83/reorderfactor) Organising factor labels as per your needs. You can change the order manually following this example.

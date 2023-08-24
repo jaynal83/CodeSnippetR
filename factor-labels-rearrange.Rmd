@@ -1,0 +1,99 @@
+---
+title: "Custom order of factor labels"
+author: "Jaynal Abedin"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **Custom order of factor labels**
+
+Working with factors in R sometimes might not intuitive. Particularly, if we convert a character variable into factor then the default sort order follows as per alphabetic order. The problem arises when we want to re-arrange the factor labels in the visualisations. This is straight forward for an ordered factor (ordinal variable), but not for un-ordered (nominal variable). In the example below, I will write a short example showing how we can re-arrange factor labels for a nominal variable.
+
+## Example
+
+The first part of this example is to create a data with two variables, as follows:
+
+-   `personId`: A numeric unique ID of study individuals
+
+-   `sportsName`: Name of sports she/he is wanted to build career. This is a character variable
+
+```{r}
+set.seed(12345)
+exampleDF <- data.frame(
+  personId = 1:150,
+  sportsName = sample(
+    c("Soccer", "Cricket", "Basketball", "Rugby", "Football"),
+    size = 150,
+    replace = TRUE
+  )
+)
+```
+
+In the code block above, `set.seed()` function used so that the results are reproducible. The data contains 150 rows with unique ID as the sequential numbers, and the sports names were created by taking a sample of size 150 with replacement from five different sports options `c("Soccer", "Cricket", "Basketball", "Rugby", "Football")`. Now the data is ready and we want to create a factor variable from `sportsName` and will create a bar chart using `ggplot2`. Here I will use `dplyr` library for data processing.
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+
+exampleDF <- exampleDF %>%
+  mutate(
+    sportsFct = as.factor(sportsName)
+  )
+
+library(ggplot2)
+
+ggplot(data = exampleDF)+
+  geom_bar(
+    aes(
+      x=sportsFct,
+      y=after_stat(count)
+    )
+  )
+```
+
+We can see that factor labels were organized as per their alphabetic order. We want to change this order to display it as: `Soccer`, `Football`, `Rugby`, `Basketball`, and `Cricket`. To achieve this goal, we will use another library called `forcats`.
+
+```{r, warning=FALSE, message=FALSE}
+library(forcats)
+
+exampleDF <- exampleDF %>%
+  mutate(
+    sportsFct = fct_relevel(
+      sportsFct,
+      c("Soccer", "Football", "Rugby", "Basketball", "Cricket")
+    )
+  )
+
+ggplot(data = exampleDF)+
+  geom_bar(
+    aes(
+      x=sportsFct,
+      y=after_stat(count)
+    )
+  )
+```
+
+Now if we want `Cricket` should display as the first element, then:
+
+```{r, warning=FALSE, message=FALSE}
+exampleDF <- exampleDF %>%
+  mutate(
+    sportsFct = fct_relevel(
+      sportsFct,
+      c("Cricket","Soccer", "Football", "Rugby", "Basketball")
+    )
+  )
+
+ggplot(data = exampleDF)+
+  geom_bar(
+    aes(
+      x=sportsFct,
+      y=after_stat(count)
+    )
+  )
+```
+
+Please leave a comment or questions if you have any. Also, if you want more customisation in this plot, feel free to ask.
