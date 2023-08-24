@@ -1,0 +1,69 @@
+---
+title: "Density Plot with Filled Area by Quantiles"
+author: "Jaynal Abedin"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Probability Density Plot
+
+This is a short coding tutorial of creating a probability density plot with areas of the density plot is filled by quantile of interest. I have used the `faithful` data from the `dataset` library and `ggplot2` for visualization.
+
+## Example
+
+You can modify the code based on your need.:
+
+```{r pressure, echo=TRUE}
+library(ggplot2)
+
+# Estimated probability density
+estDensity <- density(faithful$eruptions)
+
+# Compute the quantile values and create a factor variable for the quantiles
+estQuant <- quantile(faithful$eruptions, probs = c(0.75, 0.9, 0.95))
+df_dens <- data.frame(
+  x = estDensity$x,
+  y = estDensity$y,
+  quantFct = factor(findInterval(estDensity$x, estQuant))
+)
+
+# Density plot using ggplot2
+# 1. Use geom_line() with the estimated density for each x=eruptions
+# 2. geom_ribbon() to fill the areas for the quantiles 
+ggplot(
+  data = df_dens
+)+
+  geom_line(
+    aes(
+      x=x,
+      y=y
+    )
+  )+
+  geom_ribbon(
+    aes(
+      x=x, ymin=0, ymax=y, fill = quantFct
+    ),
+    alpha = 0.25
+  )+
+  scale_x_continuous(
+    breaks=estQuant
+  )+
+  scale_fill_manual(
+    name = "",
+    values = c("green","yellow","orange","red")
+  )+
+  labs(title = "Probability Density")+
+  xlab("Eruptions")+ylab("Estimated Density")+
+  theme_bw()+
+  theme(
+    axis.text.x = element_text(angle = 90),
+    panel.grid = element_blank(),
+    legend.position = "none"
+  )
+```
+
+If you want more explanation or more work similar to this, just write your comments.
